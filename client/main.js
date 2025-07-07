@@ -24,7 +24,7 @@ export function Main() {
 
 return {
   tag: 'div',
-  attrs: {},
+  attrs: {class: 'centered-page'},
   children: [
     {
       tag: 'h1',
@@ -90,7 +90,6 @@ return {
       tag: 'p',
       attrs: {
         id: 'error',
-        style: 'color:red'
       },
       children: [error || '']
     },

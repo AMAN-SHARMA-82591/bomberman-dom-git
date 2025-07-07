@@ -13,7 +13,9 @@ export function Lobby() {
 
   return {
     tag: "div",
-    attrs: { id: "lobby-page" },
+    attrs: { id: "lobby-page",
+      class: "centered-page"
+     },
     children: [
       {
         tag: "div",
@@ -102,7 +104,7 @@ export function Lobby() {
           },
           {
             tag: "p",
-            attrs: { id: "error", style: "color:red" },
+            attrs: { id: "error"},
             children: [],
           },
         ],

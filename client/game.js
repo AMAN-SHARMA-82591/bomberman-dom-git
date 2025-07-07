@@ -1,6 +1,6 @@
 import { Chat } from "./chat.js";
 import { sendMessage } from "./ws.js";
-import { stopGame, gameStarted } from "./logic.js";
+import { stopGame, gameStarted, handleChatOutsideClick } from "./logic.js";
 import { emit } from "../framework/index.js";
 
 export function Game() {
@@ -44,10 +44,6 @@ export function Game() {
         attrs: { id: "game-container" },
         children: [
           {
-            tag: "h2",
-            children: ["Twilight Inferno"],
-          },
-          {
             tag: "div",
             attrs: { id: "player-lives" },
             children: [],
@@ -89,13 +85,19 @@ export function Game() {
                 chatArea.classList.toggle("collapsed");
                 // Hide notification when opened
                 if (!chatArea.classList.contains("collapsed")) {
-                  const notification =
-                    document.getElementById("chat-notification");
-                  if (notification) {
-                    notification.style.display = "none";
-                    window.lastNotificationCleared = Date.now();
-                  }
+                const notification = document.getElementById("chat-notification");
+                if (notification) {
+                  notification.style.display = "none";
+                  window.lastNotificationCleared = Date.now();
                 }
+                // Add document click listener for outside click
+                setTimeout(() => {
+                  document.addEventListener("mousedown", handleChatOutsideClick);
+                }, 0);
+              } else {
+                // Remove listener when chat is closed
+                document.removeEventListener("mousedown", handleChatOutsideClick);
+              }
               },
             },
             children: [
