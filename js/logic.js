@@ -471,9 +471,10 @@ export function updateEliminationMessage() {
 }
 
 function generatePlayerLives(player) {
-  const lifeIcons = Array(player.lives || 0)
-    .fill('<img src="./assets/lives.png" alt="Life" class="icon" />')
-    .join('');
+  const showLives = player.lives > 0 && player.alive !== false;
+  const lifeIcons = showLives
+    ? Array(player.lives).fill('<img src="./assets/lives.png" alt="Life" class="icon" />').join('')
+    : '';
 
   const bombsHtml = `
     <span class="powerups">Power-ups: </span>

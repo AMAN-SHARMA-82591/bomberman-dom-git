@@ -73,8 +73,7 @@ function looseLife(id) {
     player.lives = 0; // Ensure lives don't go negative
     player.alive = false;
     player.position = null; // Remove position if player is eliminated
-    console.log("AFTER ELIMINATION", player);
-    //removePlayer(id); // Remove player if lives reach 0
+
     broadcast({
       type: "playerEliminated",
       nickname: player.nickname,

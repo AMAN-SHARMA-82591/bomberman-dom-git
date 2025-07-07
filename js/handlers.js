@@ -169,7 +169,6 @@ on("playerUpdate", ({ player }) => {
 
 // Handle player elimination when they lose all lives by removing avatar and showing a message
 on("playerEliminated", ({ id }) => {
-  console.log("🔥 playerEliminated EVENT TRIGGERED");
   const user = JSON.parse(localStorage.getItem("user"));
 
   if (!gameEnded && user.id === id) {
