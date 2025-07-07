@@ -23,7 +23,6 @@ export function Main() {
     bgMusic.play();
   }
 
-
 return {
   tag: 'div',
   attrs: {},
