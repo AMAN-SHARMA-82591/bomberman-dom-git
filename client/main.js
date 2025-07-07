@@ -21,7 +21,7 @@ export function Main() {
 
 return {
   tag: 'div',
-  attrs: {},
+  attrs: {class: 'centered-page'},
   children: [
     {
       tag: 'h1',

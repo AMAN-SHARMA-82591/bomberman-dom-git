@@ -411,7 +411,7 @@ function addPowerUp(powerUp) {
     } else if (powerUp.type === "flame") {
       powerUpEl.title = "+1 Range";
     } else if (powerUp.type === "speed") {
-      powerUpEl.title = "+50% Speed";
+      powerUpEl.title = "+25% Speed";
     }
 
     cell.appendChild(powerUpEl);
@@ -485,7 +485,7 @@ function generatePlayerLives(player) {
         : ''
     }</span>`;
 
-  const speedPowerUps = Math.max(0, Math.round((player.speed - 0.5) / 0.25));
+  const speedPowerUps = Math.max(0, Math.round(Math.log(player.speed / 0.5) / Math.log(1.25)));
   const speedHtml = `
     <span class="player-speed">Speed: ${
       speedPowerUps > 0
@@ -540,5 +540,19 @@ export function updateSinglePlayerLives(player) {
     div.dataset.playerId = player.id;
     div.innerHTML = generatePlayerLives(player);
     livesEl.appendChild(div);
+  }
+}
+
+export function handleChatOutsideClick(e) {
+  const chatArea = document.getElementById("chat-area");
+  const chatToggle = document.getElementById("chat-toggle");
+  if (
+    chatArea &&
+    !chatArea.classList.contains("collapsed") &&
+    !chatArea.contains(e.target) &&
+    (!chatToggle || !chatToggle.contains(e.target))
+  ) {
+    chatArea.classList.add("collapsed");
+    document.removeEventListener("mousedown", handleChatOutsideClick);
   }
 }

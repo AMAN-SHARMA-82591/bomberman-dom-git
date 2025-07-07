@@ -23,7 +23,9 @@ export function Lobby() {
 
   return {
     tag: "div",
-    attrs: { id: "lobby-page" },
+    attrs: { id: "lobby-page",
+      class: "centered-page"
+     },
     children: [
       {
         tag: "div",

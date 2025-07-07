@@ -64,9 +64,12 @@ export function deActivePlayer(id) {
 function looseLife(id) {
   console.log("looseLife called for player:", id);
   const player = players.get(id);
-  if (!player) return;
+  if (!player || player.immune) return; // <-- Already immune? Ignore
+
   player.lives--;
+  player.immune = true; // <-- Set immune
   if (player.lives <= 0) {
+    player.immune = false; // Reset immune status
     console.log(`Player ${player.nickname} has been eliminated.`);
     player.lives = 0; // Ensure lives don't go negative
     player.alive = false;
@@ -114,6 +117,24 @@ function looseLife(id) {
       });
     }, 1000); // 1 second delay
   }
+  // 2 seconds: remove immunity
+  setTimeout(() => {
+    player.immune = false;
+    broadcast({
+      type: "playerUpdate",
+      player: {
+        id: player.id,
+        nickname: player.nickname,
+        lives: player.lives,
+        alive: player.alive,
+        position: player.position,
+        speed: player.speed,
+        bombCount: player.bombCount,
+        bombRange: player.bombRange,
+        immune: false,
+      },
+    });
+  }, 2000); // 2 seconds immunity
 }
 
 function handlePlaceBomb(playerId) {

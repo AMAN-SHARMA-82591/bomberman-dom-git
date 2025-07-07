@@ -2,10 +2,10 @@
 
 #app {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 @keyframes growTitle {
@@ -33,13 +33,21 @@
   }
 }
 
+.centered-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical centering */
+  align-items: center;       /* horizontal centering */
+}
+
 #title {
   font-family: "Twilight", sans-serif;
   font-size: 5em;
   font-weight: lighter;
   color: #fff;
   text-align: center;
-  margin-top: 20px;
+  margin: 10px;
 }
 
 #info-text {
@@ -53,7 +61,7 @@
   font-size: 1em;
   padding: 10px;
   width: 250px;
-  margin: 20px auto;
+  margin: 10px;
   display: block;
   border: none;
   border-radius: 5px;
@@ -68,13 +76,13 @@
   border-radius: 5px;
   cursor: pointer;
   display: block;
-  margin: 20px auto;
+  margin: 10px;
 }
 
 .lobby-container {
   margin: 20px;
-  padding-bottom: 20px;
-  max-width: 800px;
+  padding: 20px;
+  width: 100%;
   background-color: #4f675490;
   border-radius: 15px;
   color: white;
@@ -105,12 +113,12 @@
 }
 
 .info-section {
-  margin: 20px;
-  padding: 20px;
-  max-width: 700px;
-  background-color: rgba(0, 0, 0, 0.442);
-  border-radius: 10px;
-  color: #fff;
+    margin: 20px;
+    padding: 20px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.442);
+    border-radius: 10px;
+    color: #fff;
 }
 
 h2 {
@@ -120,22 +128,24 @@ h2 {
 
 #game-page-container {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* Stack children vertically */
+  align-items: flex-start;    /* Center horizontally */
+  justify-content: flex-start; /* Align to top */
   background-image: url("../assets/woods.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  overflow-x: auto;
 }
 
 #game-board {
   display: grid;
   grid-template-columns: repeat(15, 60px);
   grid-template-rows: repeat(13, 60px);
-  margin: 20px auto;
+  margin: 20px 0;
   width: fit-content;
   position: relative;
 }
@@ -239,7 +249,7 @@ body {
   margin: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;;
 }
 
 #background-video {
@@ -488,7 +498,6 @@ button:hover {
   padding: 10px 10px;
   border-radius: 8px;
   font-size: 1.1em;
-  font-family: Twilight, sans-serif;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   width: 160px;
   height: 140px;
@@ -497,13 +506,33 @@ button:hover {
 
 .player-top {
   white-space: nowrap; 
+  font-family: 'Twilight', sans-serif;
+  font-size: 1.2em;
 }
 
 .player-bottom {
   white-space: nowrap;
   display: flex;
-  gap: 6px; 
+  gap: 10px; 
   flex-direction: column;
+}
+
+.player-range {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.player-speed {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.player-bombs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 #music-btn {
@@ -526,9 +555,13 @@ button:hover {
   width: 20px;
   height: 20px;
   vertical-align: middle;
-  margin-right: 4px;
+  padding: 0 2px;
 }
 
 .powerups {
   color: rgb(10, 11, 10);
+}
+
+#leave-game-button {
+    float: right;   
 }
