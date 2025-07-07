@@ -368,7 +368,7 @@ export function updatePlayerPosition(id, position) {
 
 // Add this function to render power-ups:
 
-export function renderPowerUps(powerUps, width) {
+export function renderPowerUps(powerUps) {
   if (!powerUps) return;
 
   const board = document.getElementById("game-board");
@@ -386,14 +386,17 @@ export function renderPowerUps(powerUps, width) {
 
   // Add new power-ups
   powerUps.forEach((powerUp) => {
-    // Check if the power-up element already exists
-    if (board.querySelector(`[data-powerup-id="${powerUp.id}"]`)) {
-      return; // Already exists, do nothing
-    }
+    addPowerUp(powerUp);
+  });
+    
+}
 
-    const index = powerUp.y * width + powerUp.x;
-    const cell = document.querySelector(
-      `#game-board .cell:nth-child(${index + 1})`
+function addPowerUp(powerUp) {
+  const board = document.getElementById("game-board");
+  if (!board) return;
+
+  const cell = board.querySelector(
+      `.cell[data-row="${powerUp.y}"][data-col="${powerUp.x}"]`
     );
     if (!cell) return;
 
@@ -412,31 +415,23 @@ export function renderPowerUps(powerUps, width) {
     }
 
     cell.appendChild(powerUpEl);
-  });
 }
 
-export function updateMapTiles(map) {
+export function updateMapTiles(tiles, powerUps) {
   const board = document.getElementById("game-board");
   if (!board) return;
 
-  // Update only the tile classes, don't clear the entire board
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
-      const cell = board.querySelector(
-        `.cell[data-row="${y}"][data-col="${x}"]`
-      );
-      if (!cell) continue;
+  for (const {x, y} of tiles) {
+    const cell = board.querySelector(`.cell[data-row="${y}"][data-col="${x}"]`);
+    if (!cell) continue;
+      // Remove existing classes
+      cell.classList.remove("destructible-wall");
 
-      // Reset tile classes
-      cell.classList.remove("wall", "destructible-wall");
-
-      // Apply new tile class
-      if (map.tiles[y][x] === "wall") {
-        cell.classList.add("wall");
-      } else if (map.tiles[y][x] === "destructible-wall") {
-        cell.classList.add("destructible-wall");
+      // Add new class based on tile type
+      const powerUp = powerUps.find(p => p.x === x && p.y === y);
+      if (powerUp) {
+        addPowerUp(powerUp);
       }
-    }
   }
 }
 

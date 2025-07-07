@@ -151,9 +151,11 @@ on("explosion", ({ bombId, explosion, updatedMap, players }) => {
   }
 
   // Update only the map tiles, don't re-render the entire board
-  updateMapTiles(updatedMap);
-  renderPlayers(players, updatedMap.width);
-  renderPowerUps(updatedMap.powerUps, updatedMap.width);
+  updateMapTiles(explosion.tiles, updatedMap.powerUps); // only render the tiles that were affected by the explosion
+  for (const player of players) {
+    updatePlayer(player); // update player positions and states
+  }
+  //renderPowerUps(updatedMap.powerUps, updatedMap.width);
   showExplosion(explosion);
 });
 
@@ -189,7 +191,11 @@ on("gameEnded", ({ winner }) => {
   updateEliminationMessage();
   const gameOver = document.createElement("div");
   gameOver.id = "game-over";
-  gameOver.innerHTML = `The shadows fall... The victor emerges: ${winner}. <br> <button id="back-to-menu">Back to Start</button>`;
+  if (winner !== null) {
+    gameOver.innerHTML = `The shadows fall... The victor emerges: ${winner}. <br> <button id="back-to-menu">Back to Start</button>`;
+  } else {
+    gameOver.innerHTML = `"Moonlight lingers on the ruins. All have fallen." <br> <button id="back-to-menu">Back to Start</button>`;
+  }
   document.body.appendChild(gameOver);
 
   document.getElementById("back-to-menu").addEventListener("click", () => {

@@ -98,8 +98,14 @@ server.on('connection', ws => {
 
   // Delete connection when client disconnects
   ws.on('close', () => {
-    clients.delete(ws);
-    broadcast({ type: 'playerCount', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
+    for (const [id, client] of clients.entries()) {
+      if (client.ws === ws) {
+            clients.delete(id);
+            broadcast({ type: 'playerCount', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
+        break;
+      }
+    }
+  
   });
 
 });

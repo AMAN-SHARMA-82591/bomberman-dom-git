@@ -58,9 +58,7 @@ export function deActivePlayer(id) {
   player.alive = false;
   player.position = null; // Remove position if player is deactivated
   player.lives = 0; // Reset lives
-  broadcast({ type: "playerDeactivated", nickname: player.nickname });
-  //removePlayer(id); // Remove player from the game
-  checkGameEnd();
+  broadcast({ type: "playerEliminated", id: player.id, nickname: player.nickname });
 }
 
 function looseLife(id) {
@@ -79,7 +77,6 @@ function looseLife(id) {
       nickname: player.nickname,
       id: player.id,
     });
-    checkGameEnd();
   } else {
     broadcast({
       type: "playerUpdate",
@@ -253,6 +250,9 @@ function explodeBomb(bombId) {
     looseLife(player.id);
   }
 
+  const updatedPlayers = hitPlayers.map((p) => players.get(p.id));
+
+
   const explosion = {
     id: crypto.randomUUID(),
     tiles: explosionTiles,
@@ -274,8 +274,10 @@ function explodeBomb(bombId) {
     bombId: bomb.id,
     explosion,
     updatedMap: gameState.map,
-    players: Array.from(players.values()),
+    players: updatedPlayers,
   });
+
+  checkGameEnd();
 }
 
 function getPlayerState(id) {
@@ -569,7 +571,15 @@ function checkGameEnd() {
     gameState.status = "ended";
     broadcast({
       type: "gameEnded",
-      winner: winner ? winner.nickname : "No one",
+      winner: winner ? winner.nickname : null,
+    });
+
+    setTimeout(resetGameState, 2000);
+  } else if (alivePlayers.length === 0) {
+    gameState.status = "ended";
+    broadcast({
+      type: "gameEnded",
+      winner: null, // No winner if all players are eliminated
     });
 
     setTimeout(endGame, 5000); // Reset the game board after 5 seconds
