@@ -50,10 +50,6 @@ function connect() {
         console.log("player joined message received:", msg);
         emit('playerJoined', { id: msg.id, nickname: msg.nickname });
         break;
-    // case 'lobbyReset':
-    //     console.log("lobby reset message received:", msg);
-    //     reset();
-    //     break;
     case 'gameStarted':
         console.log("game started message received:", msg);
         emit('gameStarted', { map: msg.map, players: msg.players, chatHistory: msg.chatHistory });

@@ -191,24 +191,29 @@ on("gameEnded", ({ winner }) => {
   updateEliminationMessage();
   const gameOver = document.createElement("div");
   gameOver.id = "game-over";
-  if (winner !== null) {
-    gameOver.innerHTML = `The shadows fall... The victor emerges: ${winner}. <br> <button id="back-to-menu">Back to Start</button>`;
-  } else {
-    gameOver.innerHTML = `"Moonlight lingers on the ruins. All have fallen." <br> <button id="back-to-menu">Back to Start</button>`;
-  }
+
+  let countdown = 5;
+  
+  const updateMessage = () => {
+    if (winner !== null) {
+      gameOver.innerHTML = `The shadows fall... The victor emerges: ${winner}. <br> Returning to menu in ${countdown}`;
+    } else {
+      gameOver.innerHTML = `"Moonlight lingers on the ruins. All have fallen." <br> Returning to menu in ${countdown}`;
+    }
+  };
+
+  updateMessage(); // Initial message
   document.body.appendChild(gameOver);
 
-  document.getElementById("back-to-menu").addEventListener("click", () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      sendMessage({ type: "leaveGame", id: user.id });
+  const countdownInterval = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+      updateMessage();
+    } else {
+      clearInterval(countdownInterval);
+      // The 'reset' event from the server will handle the cleanup.
     }
-    emit("reset");
-    const gameOverEl = document.getElementById("game-over");
-    if (gameOverEl) {
-      document.body.removeChild(gameOverEl);
-    }
-  });
+  }, 1000); // update every second
 });
 
 on("gameUpdate", ({ gameState, players, chatHistory }) => {
