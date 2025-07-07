@@ -119,7 +119,7 @@ on("waitingTimer", ({ timeLeft }) => {
 on("gameStarted", ({ map, players, chatHistory }) => {
   renderStaticBoard(map);
   renderPlayers(players, map.width);
-  renderPowerUps(map.powerUps, map.width); // Add this line
+  renderPowerUps(map.powerUps); // Remove width parameter as it's not needed
 
   updateAllPlayerLives(players);
   startGame();
@@ -218,15 +218,27 @@ on("gameEnded", ({ winner }) => {
 
 on("gameUpdate", ({ gameState, players, chatHistory }) => {
   // Update the game state, players, and chat history when reloaded
-  renderStaticBoard(gameState.map);
-  renderPlayers(players, gameState.map.width);
+  // Use setTimeout to ensure DOM is ready after router re-render
+  setTimeout(() => {
+    const gameBoard = document.getElementById("game-board");
+    if (!gameBoard) {
+      console.warn("Game board not found, skipping game update");
+      return;
+    }
+    
+    renderStaticBoard(gameState.map);
+    renderPlayers(players, gameState.map.width);
+    renderPowerUps(gameState.map.powerUps);
+    updateAllPlayerLives(players);
+    startGame(); // Ensure game loop is running
 
-  const chatContainer = document.getElementById("chat");
-  if (chatContainer && chatContainer.innerHTML === "") {
-    chatHistory.forEach((entry) => {
-      appendChatMessage(entry.nickname, entry.message);
-    });
-  }
+    const chatContainer = document.getElementById("chat");
+    if (chatContainer && chatContainer.innerHTML === "") {
+      chatHistory.forEach((entry) => {
+        appendChatMessage(entry.nickname, entry.message);
+      });
+    }
+  }, 100); // Small delay to ensure DOM is mounted
 });
 
 // Handle power-up pickup
