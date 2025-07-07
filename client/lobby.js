@@ -114,7 +114,7 @@ export function Lobby() {
           },
           {
             tag: "p",
-            attrs: { id: "error", style: "color:red" },
+            attrs: { id: "error"},
             children: [],
           },
         ],

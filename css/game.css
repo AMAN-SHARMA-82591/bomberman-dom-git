@@ -264,29 +264,39 @@ body {
 
 #elimination-message {
   position: fixed;
-  top: 30%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
-  border: 2px solid #333;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   padding: 32px;
   z-index: 1000;
   font-size: 2em;
   text-align: center;
   display: none;
+  max-width: 80%;
+  color: #222;
+  font-family: Twilight, sans-serif;
+  font-weight: bold;
 }
 
 #game-over {
   position: fixed;
-  top: 30%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
-  border: 2px solid #333;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   padding: 32px;
   z-index: 1000;
   font-size: 2em;
+  font-weight: bold;
   text-align: center;
+  max-width: 80%;
+  color: #222;
+  font-family: Twilight, sans-serif;
 }
 
 #game-page-container {
@@ -564,4 +574,9 @@ button:hover {
 
 #leave-game-button {
     float: right;   
+}
+
+#error {
+  font-family: "arial", sans-serif;
+  color: #ff4d4d;
 }

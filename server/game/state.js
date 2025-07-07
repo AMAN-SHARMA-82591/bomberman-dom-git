@@ -74,12 +74,16 @@ function looseLife(id) {
     player.lives = 0; // Ensure lives don't go negative
     player.alive = false;
     player.position = null; // Remove position if player is eliminated
-    console.log("AFTER ELIMINATION", player);
-    //removePlayer(id); // Remove player if lives reach 0
+
     broadcast({
       type: "playerEliminated",
-      nickname: player.nickname,
       id: player.id,
+      nickname: player.nickname,
+      lives: 0,
+      alive: false,
+      speed: player.speed,
+      bombCount: player.bombCount,
+      bombRange: player.bombRange,
     });
   } else {
     broadcast({
@@ -567,22 +571,28 @@ function getPlayerPositions() {
   return positions;
 }
 
-export function endGame() {
+export function endGame() {  // Clear game-related state
+  console.log("Ending game and resetting state...");
   players.clear();
   updateCount(true); // Reset game start count
-  gameState.status = "waiting";
+  gameState.status = "waiting"; // Reset game status
   gameState.players = {};
   gameState.bombs = [];
   gameState.explosions = [];
   gameState.map = { width: 0, height: 0, tiles: [], powerUps: [] };
   gameState.powerUpCounts = { bomb: 4, flame: 4, speed: 2 };
   chatHistory.length = 0; // Clear chat history for the next game
-  broadcast({ type: "lobbyReset" }); // Notify clients to reset their view
-}
+  playerPositions.length = 0;
+  readyTimer = null;
 
-export function resetGameState() {
-  endGame();
-  clients.clear();
+  // Broadcast reset message to all clients
+  broadcast({ type: "reset" });
+
+  // Schedule delayed clearing of the clients map
+  setTimeout(() => {
+    console.log("Clearing clients map...");
+    clients.clear();
+  }, 1000); // Delay to ensure all clients receive the reset message
 }
 
 function checkGameEnd() {
@@ -596,15 +606,14 @@ function checkGameEnd() {
       winner: winner ? winner.nickname : null,
     });
 
-    setTimeout(resetGameState, 2000);
+    setTimeout(endGame, 5000); // Increased delay to 5 seconds
   } else if (alivePlayers.length === 0) {
     gameState.status = "ended";
     broadcast({
       type: "gameEnded",
       winner: null, // No winner if all players are eliminated
     });
-
-    setTimeout(endGame, 5000); // Reset the game board after 5 seconds
+    endGame();
   }
 }
 

@@ -11,13 +11,12 @@ export function Main() {
   let nickname = '';
 
   const user = JSON.parse(localStorage.getItem('user'));
-  const userID = user ? user.id : null;
+
   document.getElementById('background-video').style.display = 'block';
   const bgMusic = document.getElementById('background-music');
   if (bgMusic) {
     bgMusic.play();
   }
-
 
 return {
   tag: 'div',
@@ -78,7 +77,7 @@ return {
             emit('showError', 'Nickname cannot be empty');
             return;
           }
-          sendMessage({ type: 'join', id: userID, nickname });
+          sendMessage({ type: 'join', nickname });
         }
       },
       children: ['Join Game']
@@ -87,7 +86,6 @@ return {
       tag: 'p',
       attrs: {
         id: 'error',
-        style: 'color:red'
       },
       children: [error || '']
     },

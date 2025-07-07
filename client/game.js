@@ -30,7 +30,11 @@ export function Game() {
     children: [
       {
         tag: "div",
-        attrs: { id: "elimination-message" },
+        attrs: { 
+          id: "elimination-message",
+          style: "display: none;", 
+        },
+
         children: [
           "You have fallen into the dusk, but still may watch and whisper among the shadows.",
         ],
