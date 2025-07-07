@@ -442,6 +442,13 @@ export function reset() {
     localStorage.removeItem('user');
     window.location.hash = '/';
     updateGameStarted(false);
+    updateGameEnded(false);
+
+    // Remove the game over pop-up if it exists
+    const gameOverPopup = document.getElementById('game-over');
+    if (gameOverPopup) {
+      gameOverPopup.remove();
+    }
 }
 
 export function updateGameStarted(status) {
@@ -449,8 +456,7 @@ export function updateGameStarted(status) {
 }
 
 export function updateGameEnded(status) {
-  if (!status) return;
-    gameEnded = status;
+  gameEnded = status;
 }
 
 export function updateEliminationMessage() {

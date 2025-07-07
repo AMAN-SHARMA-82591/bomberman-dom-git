@@ -23,10 +23,10 @@ server.on('connection', ws => {
     let id = data.id ?? null;
     console.log('Received message:', data);
 
-    if (data.type !== 'join' && data.type !== 'gameStart' && id === null) { // Check if id is provided for non-join messages
+    if (data.type !== 'join' && data.type !== 'gameStart' && data.type !== 'mainPage' && id === null) { // Check if id is provided for non-join messages
       sendMsg(ws, { type: 'error', message: 'Missing playerID' });
       return;
-    } else if (!clients.has(id) && data.type !== 'join' && data.type !== 'gameStart') { // Check if client exists
+    } else if (!clients.has(id) && data.type !== 'join' && data.type !== 'gameStart' && data.type !== 'mainPage') { // Check if client exists
       sendMsg(ws, { type: 'reset' });
       return;
     }
