@@ -49,7 +49,12 @@ server.on('connection', ws => {
         break;
 
       case 'lobby':
-        sendLobbyUpdate();
+        if (gameState.status === 'running' || gameState.status === 'ended') {
+          startGame(ws); // Send game state to the client if game is running or ended
+        } else {
+          sendLobbyUpdate(ws);
+        }
+
         break;
 
       case 'chat': // Handle chat messages

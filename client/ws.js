@@ -51,12 +51,14 @@ function connect() {
         break;
     case 'lobbyUpdate':
         console.log("lobby update message received:", msg);
+        window.location.hash = '/lobby'; // Redirect to lobby page
         emit('updateLobby', {count: msg.count, players: msg.players, gameFull: msg.gameFull, chatHistory: msg.chatHistory});
         break;
     case 'playerJoined':
         emit('playerJoined', { id: msg.id, nickname: msg.nickname });
         break;
     case 'gameStarted':
+        window.location.hash = '/game'; // Redirect to game page
         emit('gameStarted', { map: msg.map, players: msg.players, chatHistory: msg.chatHistory });
         break;
     case 'playerMoved':

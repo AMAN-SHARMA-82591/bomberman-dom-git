@@ -12,7 +12,6 @@ export function Main() {
 
   const user = JSON.parse(localStorage.getItem('user'));
   if (user) {
-    window.location.hash = '/lobby'; // Redirect to lobby if user exists
     sendMessage({ type: 'lobby', id: user.id });
     return;
   }

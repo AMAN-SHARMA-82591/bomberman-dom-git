@@ -9,6 +9,8 @@ export function Lobby() {
   const nickname = user.nickname;
   const playerID = user.id;
 
+  document.getElementById('background-video').style.display = 'block';
+
   return {
     tag: "div",
     attrs: { id: "lobby-page" },
