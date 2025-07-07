@@ -112,22 +112,29 @@ server.on('connection', ws => {
   ws.on('close', () => {
     for (const [id, client] of clients.entries()) {
       if (client.ws === ws) {
-        // Give the client 5 seconds to reconnect (for page reloads)
+        // Give the client 2 seconds to reconnect (for page reloads)
         setTimeout(() => {
-          // Check if client reconnected (ws would be different)
-          if (clients.has(id) && clients.get(id).ws === ws) {
-            clients.delete(id);
-            if (gameState.status === 'running' || gameState.status === 'ended') {
-              deActivePlayer(id); // Deactivate player if game is running
-            } else {
-              broadcast({ type: 'lobbyUpdate', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
-            }
-          }
-        }, 5000);
+          clearConnection(ws); // Clear the connection
+        }, 2000);
         break;
       }
     }
   });
 
 });
+
+function clearConnection(ws) {
+  if (!ws) return; // If WebSocket is not provided, do nothing
+  for (const [id, client] of clients.entries()) {
+    if (client.ws === ws) {
+      clients.delete(id);
+        if (gameState.status === 'running' || gameState.status === 'ended') {
+          deActivePlayer(id); // Deactivate player if game is running
+        } else {
+          broadcast({ type: 'lobbyUpdate', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
+        }
+      break;
+    }
+  }
+}
 
