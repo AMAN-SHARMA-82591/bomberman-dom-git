@@ -542,3 +542,8 @@ button:hover {
 .powerups {
   color: rgb(10, 11, 10);
 }
+
+#error {
+  font-family: "arial", sans-serif;
+  color: #ff4d4d;
+}

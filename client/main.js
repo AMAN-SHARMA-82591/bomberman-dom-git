@@ -86,7 +86,6 @@ return {
       tag: 'p',
       attrs: {
         id: 'error',
-        style: 'color:red'
       },
       children: [error || '']
     },
