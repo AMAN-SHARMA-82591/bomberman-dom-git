@@ -580,7 +580,7 @@ export function endGame() {  // Clear game-related state
   }, 1000); // Delay to ensure all clients receive the reset message
 }
 
-function checkGameEnd() {
+export function checkGameEnd() {
   const alivePlayers = Array.from(players.values()).filter((p) => p.alive);
   if (alivePlayers.length <= 1) {
     // End game if 1 or 0 players are left
