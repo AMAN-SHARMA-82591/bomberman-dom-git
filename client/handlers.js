@@ -170,17 +170,17 @@ on("playerUpdate", ({ player }) => {
 });
 
 // Handle player elimination when they lose all lives by removing avatar and showing a message
-on("playerEliminated", ({ id }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+on("playerEliminated", (player) => {
 
-  if (!gameEnded && user.id === id) {
     // remove avatar from the game board
-    const avatar = document.querySelector(`.player[data-player-id="${id}"]`);
+    const avatar = document.querySelector(`.player[data-player-id="${player.id}"]`);
     if (avatar) {
       avatar.remove();
     }
-
-    updateEliminationMessage();
+    updateSinglePlayerLives(player); // Update the player's lives display when player.lives === 0
+    const user = JSON.parse(localStorage.getItem("user")); // if it is the current user who's eliminated, update the elimination message
+      if (!gameEnded && user && user.id === player.id) {
+      updateEliminationMessage();
   }
 });
 

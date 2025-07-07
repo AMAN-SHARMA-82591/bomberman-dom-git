@@ -74,8 +74,13 @@ function looseLife(id) {
 
     broadcast({
       type: "playerEliminated",
-      nickname: player.nickname,
       id: player.id,
+      nickname: player.nickname,
+      lives: 0,
+      alive: false,
+      speed: player.speed,
+      bombCount: player.bombCount,
+      bombRange: player.bombRange,
     });
   } else {
     broadcast({
