@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws'; // Import server from 'ws' package
-import { deActivePlayer, handlePlayerMove, handlePlaceBomb, startGame, players, count, updateCount, gameState } from './game/state.js';
+import { deActivePlayer, handlePlayerMove, handlePlaceBomb, startGame, players, count, updateCount, gameState, checkGameEnd } from './game/state.js';
 import { clients, broadcast, sendMsg, updateConnection } from './handlers/connection.js'; // Import the clients map to manage connections
 import { handleJoin, readyTimer } from './handlers/main.js';
 import { sendLobbyUpdate } from './handlers/lobby.js'; // Import the lobby update function
@@ -20,13 +20,18 @@ server.on('connection', ws => {
       return;
     }
 
+    if (!data.type) return;
+    console.log('Received message type:', data);
+    console.log(clients.size, 'clients connected');
+
     let id = data.id ?? null;
-    console.log('Received message:', data);
 
     if (data.type !== 'join' && data.type !== 'gameStart' && id === null) { // Check if id is provided for non-join messages
       sendMsg(ws, { type: 'error', message: 'Missing playerID' });
       return;
     } else if (!clients.has(id) && data.type !== 'join' && data.type !== 'gameStart') { // Check if client exists
+      console.log('Client not found by id:', id);
+      console.log('Available clients:', Array.from(clients.keys()));
       sendMsg(ws, { type: 'reset' });
       return;
     }
@@ -75,19 +80,21 @@ server.on('connection', ws => {
       case 'pageReload': // update connection when pages are reloaded
         if (clients.has(id)) {
           updateConnection(id, ws)
-          if (data.page === '/lobby') {
+          if (gameState.status !== 'running' && gameState.status !== 'ended') {
             sendLobbyUpdate(ws); // Send updated player count and list
-          } else if (data.page === '/game') {
+          } else {
             startGame(ws); // Send game state to the client
-          }
+          } 
         } else {
-          sendMsg(ws, 'error', { message: 'Client not found by id' });
+          // Client not found, send reset message
+          sendMsg(ws, { type: 'reset' });
         }
         break;
 
       case 'leaveGame':
         deActivePlayer(id); // Deactivate player
         clients.delete(id); // Remove client from the map
+        checkGameEnd(); // Check if game has ended
         break;
 
       default: // Handle unknown message types
@@ -100,12 +107,21 @@ server.on('connection', ws => {
   ws.on('close', () => {
     for (const [id, client] of clients.entries()) {
       if (client.ws === ws) {
+        // Give the client 5 seconds to reconnect (for page reloads)
+        setTimeout(() => {
+          // Check if client reconnected (ws would be different)
+          if (clients.has(id) && clients.get(id).ws === ws) {
             clients.delete(id);
-            broadcast({ type: 'playerCount', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
+            if (gameState.status === 'running' || gameState.status === 'ended') {
+              deActivePlayer(id); // Deactivate player if game is running
+            } else {
+              broadcast({ type: 'lobbyUpdate', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
+            }
+          }
+        }, 5000);
         break;
       }
     }
-  
   });
 
 });

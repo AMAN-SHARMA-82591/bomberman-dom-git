@@ -8,6 +8,13 @@ function connect() {
 
     socket.addEventListener('open', () => {
         console.log('WebSocket connection established');
+        // send pageReload message when connection opens again
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+            const page = window.location.hash.replace("#", ""); // removes the '#' char
+            console.log("Sending pageReload message for user:", user.id, "on page:", page);
+            sendMessage({ type: "pageReload", id: user.id, page });
+        }
     });
 
     // Listen for messages from the server
@@ -42,20 +49,14 @@ function connect() {
     case 'error':
         emit('showError', msg.message);
         break;
-    case 'playerCount':
-        console.log("player count message received:", msg);
-        emit('updatePlayerCount', {count: msg.count, players: msg.players, gameFull: msg.gameFull, chatHistory: msg.chatHistory});
+    case 'lobbyUpdate':
+        console.log("lobby update message received:", msg);
+        emit('updateLobby', {count: msg.count, players: msg.players, gameFull: msg.gameFull, chatHistory: msg.chatHistory});
         break;
     case 'playerJoined':
-        console.log("player joined message received:", msg);
         emit('playerJoined', { id: msg.id, nickname: msg.nickname });
         break;
-    // case 'lobbyReset':
-    //     console.log("lobby reset message received:", msg);
-    //     reset();
-    //     break;
     case 'gameStarted':
-        console.log("game started message received:", msg);
         emit('gameStarted', { map: msg.map, players: msg.players, chatHistory: msg.chatHistory });
         break;
     case 'playerMoved':

@@ -11,7 +11,12 @@ export function Main() {
   let nickname = '';
 
   const user = JSON.parse(localStorage.getItem('user'));
-  const userID = user ? user.id : null;
+  if (user) {
+    window.location.hash = '/lobby'; // Redirect to lobby if user exists
+    sendMessage({ type: 'lobby', id: user.id });
+    return;
+  }
+
   document.getElementById('background-video').style.display = 'block';
   const bgMusic = document.getElementById('background-music');
   if (bgMusic) {
@@ -78,7 +83,7 @@ return {
             emit('showError', 'Nickname cannot be empty');
             return;
           }
-          sendMessage({ type: 'join', id: userID, nickname });
+          sendMessage({ type: 'join', nickname });
         }
       },
       children: ['Join Game']

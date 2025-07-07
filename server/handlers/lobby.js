@@ -3,7 +3,7 @@ import { clients, broadcast, sendMsg } from './connection.js'; // Import the cli
 
 export function sendLobbyUpdate(ws = null) {
   const message = { 
-    type: 'playerCount', 
+    type: 'lobbyUpdate', 
     count: clients.size, 
     players: Array.from(clients.values()).map(c => c.nickname), 
     gameFull: clients.size >= 4, 

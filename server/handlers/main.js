@@ -1,4 +1,4 @@
-import { clients, broadcast } from "./connection.js";
+import { clients, broadcast, sendMsg } from "./connection.js";
 import { addPlayer, startCountdown } from "../game/state.js";
 
 let waitTimer = null;
@@ -7,24 +7,24 @@ let firstJoinTime = null;
 export function handleJoin(id, ws, data) {
 
   if (clients.has(id)) { // Prevent re-joining
-      ws.send(JSON.stringify({ type: 'playerExists', id: id, nickname: clients.get(id).nickname })); // Notify client of successful join
+      sendMsg(ws, { type: 'playerExists', id: id, nickname: clients.get(id).nickname }); // Notify client of successful join
       return;
     }; 
 
   if (clients.size > 4) { // Limit to 4 players
-    ws.send(JSON.stringify({ type: 'error', message: 'Game is full', gameFull: clients.size > 4 }));
+    sendMsg(ws, { type: 'error', message: 'Game is full', gameFull: clients.size > 4 });
     return;
 
   } else {
     const error = validateNickname(data); // Validate nickname
     if (error) {
-      ws.send(JSON.stringify(error)); // Send error if nickname is invalid
+      sendMsg(ws, error); // Send error if nickname is invalid
       return;
     }
 
     id = crypto.randomUUID(); // create unique ID
     clients.set(id, { ws, nickname: data.nickname.trim() }); // Store id, connection andn nickname
-    ws.send(JSON.stringify({ type: 'playerJoined', id: id, nickname: clients.get(id).nickname})); // Notify client of successful join
+    sendMsg(ws, { type: 'playerJoined', id: id, nickname: clients.get(id).nickname}); // Notify client of successful join
   }
 }
 

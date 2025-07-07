@@ -1,16 +1,4 @@
-import { sendMessage } from "./ws.js";
 import { Chat } from "./chat.js";
-
-const user = JSON.parse(localStorage.getItem("user"));
-
-if (!user) {
-  window.location.hash = "/";
-  // setState({ page: '/' });
-} else {
-  const page = window.location.hash.replace("#", ""); // removes the '#' char
-
-  sendMessage({ type: "pageReload", id: user.id, page });
-}
 
 export function Lobby() {
   const user = JSON.parse(localStorage.getItem("user"));

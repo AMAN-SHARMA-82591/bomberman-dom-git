@@ -410,7 +410,13 @@ function isPositionValid({ x, y }) {
     return false;
   }
 
-  // // Check for collisions with other players
+  // // Check for collisions with bombs
+  const isBombPresent = gameState.bombs.some(
+    (b) => b.position.x === x && b.position.y === y
+  );
+  if (isBombPresent) {
+    return false;
+  }
   // for (const p of players.values()) {
   //   if (p.alive && p.position && p.position.x === x && p.position.y === y) {
   //     return false;

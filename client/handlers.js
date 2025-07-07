@@ -22,7 +22,7 @@ console.log("Handlers loaded");
 
 on("playerJoined", ({ id, nickname }) => {
   localStorage.setItem("user", JSON.stringify({ id, nickname }));
-  window.location.hash = "/lobby";
+  window.location.hash = "/lobby"; // Redirect to lobby page
   sendMessage({ type: "lobby", id });
 });
 
@@ -69,7 +69,7 @@ on("newChat", ({ nickname, message }) => {
   appendChatMessage(nickname, message);
 });
 
-on("updatePlayerCount", ({ count, players, gameFull, chatHistory }) => {
+on("updateLobby", ({ count, players, gameFull, chatHistory }) => {
   // update count
   const countEl = document.getElementById("player-count");
   if (countEl) countEl.textContent = `Players: ${count}/4`;

@@ -1,4 +1,4 @@
-import { gameState } from './game/state.js';
+import { gameState, checkGameEnd } from './game/state.js';
 
 const DEFAULT_TICKRATE = 60; // Default tick rate in frames per second (fps)
 let intervalId = null;
@@ -67,4 +67,5 @@ function update(interval = 1000 / DEFAULT_TICKRATE) {
   gameState.tick = next.tick; // update game state tick
   gameState.bombs = nextBombs; // update bombs in game state
   gameState.explosions = nextExplosions; // update explosions in game state
+  checkGameEnd(); // check if game has ended
 }
