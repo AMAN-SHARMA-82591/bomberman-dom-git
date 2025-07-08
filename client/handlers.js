@@ -242,7 +242,7 @@ on("gameUpdate", ({ gameState, players, chatHistory }) => {
 });
 
 // Handle power-up pickup
-on("powerUpPickup", ({ playerId, powerUpId, newPowerUps }) => {
+on("powerUpPickup", ({ powerUpId }) => {
   // Remove power-up from DOM
   const powerUpEl = document.querySelector(`[data-powerup-id="${powerUpId}"]`);
   if (powerUpEl) {

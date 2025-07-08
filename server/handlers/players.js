@@ -76,7 +76,7 @@ export function loseLife(id) {
       if (startPositions[playerIndex]) {
         player.position = { ...startPositions[playerIndex] };
       }
-      sendPlayerUpdate(player);
+      sendPlayerUpdate(player, player.position); // Send updated position to all clients
     }, 1000); // 1 second delay
   }
   // 2 seconds: remove immunity
@@ -174,15 +174,11 @@ export function handlePlayerMove(id, direction) {
 
       broadcast({
         type: "powerUpPickup",
-        playerId: id,
         powerUpId: powerUp.id,
-        newPowerUps: gameState.map.powerUps,
       });
-
-      // Also broadcast the player stats update
       sendPlayerUpdate(player);
     }
-
+    
     broadcast({ type: "playerMoved", id, position: newPosition, oldPosition });
   }
 }
@@ -202,7 +198,7 @@ export function getPlayerPositions(width = 15, height = 13) {
 }
 
 // Send player update to all clients or a specific client
-function sendPlayerUpdate(player, ws = null) {
+function sendPlayerUpdate(player, position = null, ws = null) {
     if (!player) return;
 
     const message = {
@@ -219,6 +215,10 @@ function sendPlayerUpdate(player, ws = null) {
         immune: false,
       }
     };
+    if (!position) {
+      message.player.position = null;
+    }
+
     if (ws) {
       sendMsg(ws, message);
     } else {

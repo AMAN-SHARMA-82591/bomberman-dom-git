@@ -90,9 +90,7 @@ function connect() {
         break;
     case 'powerUpPickup':
         emit('powerUpPickup', { 
-          playerId: msg.playerId, 
           powerUpId: msg.powerUpId,
-          newPowerUps: msg.newPowerUps 
         });
         break;
     }
