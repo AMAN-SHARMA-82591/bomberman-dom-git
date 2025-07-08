@@ -10,16 +10,19 @@ const keysPressed = new Set();
 let lastMoveTime = 0;
 const MOVE_INTERVAL = 50; // Send move requests more often
 export let gameEnded = false;
-export let gameStarted = false
-
+export let gameStarted = false;
 
 function handleKeyDown(e) {
   // If the user is typing in the chat input, do not handle game controls.
-  if (document.activeElement.id === 'chat-input' || gameEnded ) {
+  if (document.activeElement.id === "chat-input" || gameEnded) {
     return;
   }
   const user = JSON.parse(localStorage.getItem("user"));
-  if (user && clientPlayers.has(user.id) && clientPlayers.get(user.id).stunned) {
+  if (
+    user &&
+    clientPlayers.has(user.id) &&
+    clientPlayers.get(user.id).stunned
+  ) {
     return;
   }
 
@@ -72,13 +75,17 @@ function clientRenderLoop() {
     const progress = Math.min(timeSinceUpdate / moveDuration, 1);
 
     // Linear interpolation (lerp)
-    const visualX = player.lastPos.x + (player.targetPos.x - player.lastPos.x) * progress;
-    const visualY = player.lastPos.y + (player.targetPos.y - player.lastPos.y) * progress;
+    const visualX =
+      player.lastPos.x + (player.targetPos.x - player.lastPos.x) * progress;
+    const visualY =
+      player.lastPos.y + (player.targetPos.y - player.lastPos.y) * progress;
     const speedFactor = Math.min(player.speed, 5); // cap the player speed
     moveDuration /= Math.pow(speedFactor, 2); // Reduce interpolation duration more aggressively
 
     // Update CSS transform
-    player.element.style.transform = `translate(${visualX * TILE_SIZE}px, ${visualY * TILE_SIZE}px)`;
+    player.element.style.transform = `translate(${visualX * TILE_SIZE}px, ${
+      visualY * TILE_SIZE
+    }px)`;
   }
 
   requestAnimationFrame(clientRenderLoop);
@@ -93,7 +100,11 @@ function gameLoop(timestamp) {
     return;
   }
 
-  if (user && clientPlayers.has(user.id) && clientPlayers.get(user.id).stunned) {
+  if (
+    user &&
+    clientPlayers.has(user.id) &&
+    clientPlayers.get(user.id).stunned
+  ) {
     requestAnimationFrame(gameLoop);
     return;
   }
@@ -181,11 +192,13 @@ export function renderPlayers(players, width) {
         targetPos: { ...p.position },
         lastUpdateTime: Date.now(),
         speed: p.speed, // Store initial speed
-        lives: p.lives
+        lives: p.lives,
       });
 
       // Set initial position
-      avatarDiv.style.transform = `translate(${p.position.x * TILE_SIZE}px, ${p.position.y * TILE_SIZE}px)`;
+      avatarDiv.style.transform = `translate(${p.position.x * TILE_SIZE}px, ${
+        p.position.y * TILE_SIZE
+      }px)`;
     }
   });
 }
@@ -197,9 +210,13 @@ export function showExplosion(explosion) {
   function getExplosionType(tile) {
     if (tile.dx === 0 && tile.dy === 0) return "center";
     // End if it's the farthest in its direction
-    const isEnd = tile.distance === Math.max(
-      ...explosion.tiles.filter(t => t.dx === tile.dx && t.dy === tile.dy).map(t => t.distance)
-    );
+    const isEnd =
+      tile.distance ===
+      Math.max(
+        ...explosion.tiles
+          .filter((t) => t.dx === tile.dx && t.dy === tile.dy)
+          .map((t) => t.distance)
+      );
     if (isEnd) {
       if (tile.dx === 0 && tile.dy === -1) return "end_up";
       if (tile.dx === 0 && tile.dy === 1) return "end_down";
@@ -291,7 +308,7 @@ export function updatePlayer(player) {
   const avatar = document.querySelector(`.player[data-player-id="${id}"]`);
   if (!avatar) return;
 
-   // Update client-side state if it exists
+  // Update client-side state if it exists
   if (clientPlayers.has(id)) {
     const playerState = clientPlayers.get(id);
 
@@ -318,12 +335,15 @@ export function updatePlayer(player) {
     // update position visually if changed
     if (
       position &&
-      (playerState.targetPos.x !== position.x || playerState.targetPos.y !== position.y)
+      (playerState.targetPos.x !== position.x ||
+        playerState.targetPos.y !== position.y)
     ) {
       playerState.lastPos = { ...position };
       playerState.targetPos = { ...position };
       playerState.lastUpdateTime = Date.now();
-      playerState.element.style.transform = `translate(${position.x * TILE_SIZE}px, ${position.y * TILE_SIZE}px)`;
+      playerState.element.style.transform = `translate(${
+        position.x * TILE_SIZE
+      }px, ${position.y * TILE_SIZE}px)`;
     }
   }
 
@@ -339,6 +359,7 @@ export function leaveGame(id) {
   if (!id) return;
   sendMessage({ type: "leaveGame", id });
   localStorage.removeItem("user");
+  localStorage.removeItem("gameActive"); // Clear game active flag
   stopGame(); // Stop the loop and remove listeners
   window.location.hash = "/";
 }
@@ -348,15 +369,16 @@ export function updatePlayerPosition(id, position) {
     const playerState = clientPlayers.get(id);
 
     // If the player is being reset to a spawn (e.g. after losing a life), snap instantly
-    const isTeleport = (
+    const isTeleport =
       Math.abs(playerState.targetPos.x - position.x) > 1 ||
-      Math.abs(playerState.targetPos.y - position.y) > 1
-    );
+      Math.abs(playerState.targetPos.y - position.y) > 1;
     if (isTeleport) {
       playerState.lastPos = { ...position };
       playerState.targetPos = { ...position };
       playerState.lastUpdateTime = Date.now();
-      playerState.element.style.transform = `translate(${position.x * TILE_SIZE}px, ${position.y * TILE_SIZE}px)`;
+      playerState.element.style.transform = `translate(${
+        position.x * TILE_SIZE
+      }px, ${position.y * TILE_SIZE}px)`;
     } else {
       // Normal movement interpolation
       playerState.lastPos = { ...playerState.targetPos };
@@ -374,11 +396,11 @@ export function renderPowerUps(powerUps) {
   const board = document.getElementById("game-board");
   if (!board) return;
 
-  const existingPowerUpIds = new Set(powerUps.map(p => p.id));
+  const existingPowerUpIds = new Set(powerUps.map((p) => p.id));
   const powerUpElements = board.querySelectorAll(".power-up");
 
   // Remove power-ups that are no longer in the state
-  powerUpElements.forEach(el => {
+  powerUpElements.forEach((el) => {
     if (!existingPowerUpIds.has(el.dataset.powerupId)) {
       el.remove();
     }
@@ -388,7 +410,6 @@ export function renderPowerUps(powerUps) {
   powerUps.forEach((powerUp) => {
     addPowerUp(powerUp);
   });
-    
 }
 
 function addPowerUp(powerUp) {
@@ -396,64 +417,65 @@ function addPowerUp(powerUp) {
   if (!board) return;
 
   const cell = board.querySelector(
-      `.cell[data-row="${powerUp.y}"][data-col="${powerUp.x}"]`
-    );
-    if (!cell) return;
+    `.cell[data-row="${powerUp.y}"][data-col="${powerUp.x}"]`
+  );
+  if (!cell) return;
 
-    // Prevent adding a duplicate power-up element
-    if (cell.querySelector(`.power-up[data-powerup-id="${powerUp.id}"]`)) {
-      return;
-    }
+  // Prevent adding a duplicate power-up element
+  if (cell.querySelector(`.power-up[data-powerup-id="${powerUp.id}"]`)) {
+    return;
+  }
 
-    const powerUpEl = document.createElement("div");
-    powerUpEl.className = "power-up";
-    powerUpEl.dataset.powerupId = powerUp.id;
-    powerUpEl.dataset.powerupType = powerUp.type; // Add type for CSS
+  const powerUpEl = document.createElement("div");
+  powerUpEl.className = "power-up";
+  powerUpEl.dataset.powerupId = powerUp.id;
+  powerUpEl.dataset.powerupType = powerUp.type; // Add type for CSS
 
-    // Set tooltip based on type
-    if (powerUp.type === "bomb") {
-      powerUpEl.title = "+1 Bomb";
-    } else if (powerUp.type === "flame") {
-      powerUpEl.title = "+1 Range";
-    } else if (powerUp.type === "speed") {
-      powerUpEl.title = "+25% Speed";
-    }
+  // Set tooltip based on type
+  if (powerUp.type === "bomb") {
+    powerUpEl.title = "+1 Bomb";
+  } else if (powerUp.type === "flame") {
+    powerUpEl.title = "+1 Range";
+  } else if (powerUp.type === "speed") {
+    powerUpEl.title = "+25% Speed";
+  }
 
-    cell.appendChild(powerUpEl);
+  cell.appendChild(powerUpEl);
 }
 
 export function updateMapTiles(tiles, powerUps) {
   const board = document.getElementById("game-board");
   if (!board) return;
 
-  for (const {x, y} of tiles) {
+  for (const { x, y } of tiles) {
     const cell = board.querySelector(`.cell[data-row="${y}"][data-col="${x}"]`);
     if (!cell) continue;
-      // Remove existing classes
-      cell.classList.remove("destructible-wall");
+    // Remove existing classes
+    cell.classList.remove("destructible-wall");
 
-      // Add new class based on tile type
-      const powerUp = powerUps.find(p => p.x === x && p.y === y);
-      if (powerUp) {
-        addPowerUp(powerUp);
-      }
+    // Add new class based on tile type
+    const powerUp = powerUps.find((p) => p.x === x && p.y === y);
+    if (powerUp) {
+      addPowerUp(powerUp);
+    }
   }
 }
 
 // reset to start page by removing user from localStorage and redirecting to main page
 // and updating gameStarted state
 export function reset() {
-    stopGame();
-    localStorage.removeItem('user');
-    window.location.hash = '/';
-    updateGameStarted(false);
-    updateGameEnded(false);
+  stopGame();
+  localStorage.removeItem("user");
+  localStorage.removeItem("gameActive"); // Clear game active flag
+  window.location.hash = "/";
+  updateGameStarted(false);
+  updateGameEnded(false);
 
-    // Remove the game over pop-up if it exists
-    const gameOverPopup = document.getElementById('game-over');
-    if (gameOverPopup) {
-      gameOverPopup.remove();
-    }
+  // Remove the game over pop-up if it exists
+  const gameOverPopup = document.getElementById("game-over");
+  if (gameOverPopup) {
+    gameOverPopup.remove();
+  }
 }
 
 export function updateGameStarted(status) {
@@ -465,44 +487,55 @@ export function updateGameEnded(status) {
 }
 
 export function updateEliminationMessage() {
-      // create a div to show the message
-    const container = document.getElementById("elimination-message");
-    if (container) {
-      if (gameEnded) {
-        container.style.display = "none";
-      } else {
-        container.style.display = "block";
-      }
+  // create a div to show the message
+  const container = document.getElementById("elimination-message");
+  if (container) {
+    if (gameEnded) {
+      container.style.display = "none";
+    } else {
+      container.style.display = "block";
     }
+  }
 }
 
 function generatePlayerLives(player) {
   const showLives = player.lives > 0 && player.alive !== false;
   const lifeIcons = showLives
-    ? Array(player.lives).fill('<img src="./assets/lives.png" alt="Life" class="icon" />').join('')
-    : '';
+    ? Array(player.lives)
+        .fill('<img src="./assets/lives.png" alt="Life" class="icon" />')
+        .join("")
+    : "";
 
   const bombsHtml = `
     <span class="powerups">Power-ups: </span>
     <span class="player-bombs">Bombs: ${
       player.bombCount > 1
-        ? '<img src="./assets/powerup_bomb.png" alt="Bomb" class="icon" />'.repeat(player.bombCount - 1)
-        : ''
+        ? '<img src="./assets/powerup_bomb.png" alt="Bomb" class="icon" />'.repeat(
+            player.bombCount - 1
+          )
+        : ""
     }</span>`;
 
   const rangeHtml = `
     <span class="player-range">Range: ${
       player.bombRange > 1
-        ? '<img src="./assets/powerup_range.png" alt="Range" class="icon" />'.repeat(player.bombRange - 1)
-        : ''
+        ? '<img src="./assets/powerup_range.png" alt="Range" class="icon" />'.repeat(
+            player.bombRange - 1
+          )
+        : ""
     }</span>`;
 
-  const speedPowerUps = Math.max(0, Math.round(Math.log(player.speed / 0.5) / Math.log(1.25)));
+  const speedPowerUps = Math.max(
+    0,
+    Math.round(Math.log(player.speed / 0.5) / Math.log(1.25))
+  );
   const speedHtml = `
     <span class="player-speed">Speed: ${
       speedPowerUps > 0
-        ? '<img src="./assets/powerup_speed.png" alt="Speed" class="icon" />'.repeat(speedPowerUps)
-        : ''
+        ? '<img src="./assets/powerup_speed.png" alt="Speed" class="icon" />'.repeat(
+            speedPowerUps
+          )
+        : ""
     }</span>`;
 
   return `
@@ -518,14 +551,13 @@ function generatePlayerLives(player) {
   `;
 }
 
-
 export function updateAllPlayerLives(players) {
   const livesEl = document.getElementById("player-lives");
   if (!livesEl || !Array.isArray(players)) return;
 
-  livesEl.innerHTML = '';
+  livesEl.innerHTML = "";
 
-  players.forEach(player => {
+  players.forEach((player) => {
     if (!player) return;
 
     const div = document.createElement("div");
@@ -536,11 +568,12 @@ export function updateAllPlayerLives(players) {
   });
 }
 
-
 export function updateSinglePlayerLives(player) {
   if (!player) return;
 
-  const el = document.querySelector(`.player-lives-info[data-player-id="${player.id}"]`);
+  const el = document.querySelector(
+    `.player-lives-info[data-player-id="${player.id}"]`
+  );
   const livesEl = document.getElementById("player-lives");
   if (!livesEl) return;
 

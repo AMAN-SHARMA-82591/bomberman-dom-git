@@ -7,10 +7,21 @@ export function Lobby() {
     window.location.hash = "/";
     return;
   }
+  
+  // Prevent access from an active game
+  const gameActive = localStorage.getItem("gameActive") === "true";
+  if (gameActive) {
+    console.log("Active game detected, reloading page to ensure proper state");
+    window.location.hash = "/game";
+    window.location.reload();
+    return;
+  }
+  
   if (gameStarted) {
     window.location.hash = "/game";
     return;
   }
+  
   const nickname = user.nickname;
   const playerID = user.id;
 

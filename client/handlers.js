@@ -69,34 +69,80 @@ on("newChat", ({ nickname, message }) => {
   appendChatMessage(nickname, message);
 });
 
-on("updateLobby", ({ count, players, gameFull, chatHistory }) => {
-  // update count
-  const countEl = document.getElementById("player-count");
-  if (countEl) countEl.textContent = `Players: ${count}/4`;
-
-  // update player list
-  const playerListEl = document.getElementById("player-list");
-  if (playerListEl) {
-    playerListEl.innerHTML = "";
-    players.forEach((player) => {
-      const li = document.createElement("li");
-      li.textContent = player;
-      playerListEl.appendChild(li);
-    });
+// Modify renderWithRetry to be more generic (accepts elementId parameter)
+function renderWithRetry(
+  renderFn,
+  elementId = "game-board",
+  attempts = 0,
+  maxAttempts = 5
+) {
+  // Check if the element exists
+  const element = document.getElementById(elementId);
+  if (element) {
+    // Element exists, safe to render
+    renderFn();
+  } else if (attempts < maxAttempts) {
+    // Try again after a short delay
+    console.log(
+      `${elementId} not ready, retrying (${attempts + 1}/${maxAttempts})...`
+    );
+    setTimeout(() => {
+      renderWithRetry(renderFn, elementId, attempts + 1, maxAttempts);
+    }, 100);
+  } else {
+    console.error(`Max retry attempts reached, ${elementId} not found`);
   }
+}
 
-  const chatContainer = document.getElementById("chat");
-  if (chatContainer && chatContainer.innerHTML === "") {
-    if (chatHistory) {
+on("gameStarted", ({ map, players, chatHistory }) => {
+  renderWithRetry(() => {
+    renderStaticBoard(map);
+    renderPlayers(players, map.width);
+    renderPowerUps(map.powerUps);
+    updateAllPlayerLives(players);
+    startGame();
+
+    const chatContainer = document.getElementById("chat");
+    if (chatContainer && chatContainer.innerHTML === "") {
       chatHistory.forEach((entry) => {
         appendChatMessage(entry.nickname, entry.message);
       });
     }
-  }
+  });
+});
 
-  // update game full status
-  const errorEl = document.getElementById("error");
-  if (errorEl) errorEl.textContent = gameFull ? "Game is full" : "";
+// Update the updateLobby handler to use renderWithRetry
+on("updateLobby", ({ count, players, gameFull, chatHistory }) => {
+  renderWithRetry(() => {
+    // update count
+    const countEl = document.getElementById("player-count");
+    if (countEl) countEl.textContent = `Players: ${count}/4`;
+
+    // update player list
+    const playerListEl = document.getElementById("player-list");
+    if (playerListEl) {
+      playerListEl.innerHTML = "";
+      players.forEach((player) => {
+        const li = document.createElement("li");
+        li.textContent = player;
+        playerListEl.appendChild(li);
+      });
+    }
+
+    // update chat history
+    const chatContainer = document.getElementById("chat");
+    if (chatContainer && chatContainer.innerHTML === "") {
+      if (chatHistory) {
+        chatHistory.forEach((entry) => {
+          appendChatMessage(entry.nickname, entry.message);
+        });
+      }
+    }
+
+    // update game full status
+    const errorEl = document.getElementById("error");
+    if (errorEl) errorEl.textContent = gameFull ? "Game is full" : "";
+  }, "player-count"); // Check for player-count element as the indicator
 });
 
 // countdown handler
@@ -112,23 +158,6 @@ on("waitingTimer", ({ timeLeft }) => {
   const timerContainer = document.getElementById("timer");
   if (timerContainer) {
     timerContainer.textContent = `Waiting for more players... Starting in: ${timeLeft} s`;
-  }
-});
-
-// Handle game start message
-on("gameStarted", ({ map, players, chatHistory }) => {
-  renderStaticBoard(map);
-  renderPlayers(players, map.width);
-  renderPowerUps(map.powerUps); // Remove width parameter as it's not needed
-
-  updateAllPlayerLives(players);
-  startGame();
-
-  const chatContainer = document.getElementById("chat");
-  if (chatContainer && chatContainer.innerHTML === "") {
-    chatHistory.forEach((entry) => {
-      appendChatMessage(entry.nickname, entry.message);
-    });
   }
 });
 
@@ -171,16 +200,17 @@ on("playerUpdate", ({ player }) => {
 
 // Handle player elimination when they lose all lives by removing avatar and showing a message
 on("playerEliminated", (player) => {
-
-    // remove avatar from the game board
-    const avatar = document.querySelector(`.player[data-player-id="${player.id}"]`);
-    if (avatar) {
-      avatar.remove();
-    }
-    updateSinglePlayerLives(player); // Update the player's lives display when player.lives === 0
-    const user = JSON.parse(localStorage.getItem("user")); // if it is the current user who's eliminated, update the elimination message
-      if (!gameEnded && user && user.id === player.id) {
-      updateEliminationMessage();
+  // remove avatar from the game board
+  const avatar = document.querySelector(
+    `.player[data-player-id="${player.id}"]`
+  );
+  if (avatar) {
+    avatar.remove();
+  }
+  updateSinglePlayerLives(player); // Update the player's lives display when player.lives === 0
+  const user = JSON.parse(localStorage.getItem("user")); // if it is the current user who's eliminated, update the elimination message
+  if (!gameEnded && user && user.id === player.id) {
+    updateEliminationMessage();
   }
 });
 
@@ -193,7 +223,7 @@ on("gameEnded", ({ winner }) => {
   gameOver.id = "game-over";
 
   let countdown = 5;
-  
+
   const updateMessage = () => {
     if (winner !== null) {
       gameOver.innerHTML = `The shadows fall... The victor emerges: ${winner}. <br> Returning to menu in ${countdown}`;
@@ -217,15 +247,7 @@ on("gameEnded", ({ winner }) => {
 });
 
 on("gameUpdate", ({ gameState, players, chatHistory }) => {
-  // Update the game state, players, and chat history when reloaded
-  // Use setTimeout to ensure DOM is ready after router re-render
-  setTimeout(() => {
-    const gameBoard = document.getElementById("game-board");
-    if (!gameBoard) {
-      console.warn("Game board not found, skipping game update");
-      return;
-    }
-    
+  renderWithRetry(() => {
     renderStaticBoard(gameState.map);
     renderPlayers(players, gameState.map.width);
     renderPowerUps(gameState.map.powerUps);
@@ -238,7 +260,7 @@ on("gameUpdate", ({ gameState, players, chatHistory }) => {
         appendChatMessage(entry.nickname, entry.message);
       });
     }
-  }, 100); // Small delay to ensure DOM is mounted
+  });
 });
 
 // Handle power-up pickup

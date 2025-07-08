@@ -25,6 +25,7 @@ function connect() {
     console.log("message received:", msg)
     switch (msg.type) {
     case 'reset' :
+        localStorage.removeItem("gameActive"); // Clear game active flag
         emit('reset');
         break;
     case 'readyTimer':
@@ -34,6 +35,8 @@ function connect() {
         emit('waitingTimer', { timeLeft: msg.timeLeft });
         break;
     case 'gameState':
+        // Set game active flag BEFORE redirecting
+        localStorage.setItem("gameActive", "true");
         window.location.hash = '/game'; // Redirect to game page
         sendMessage({ type: 'gameStart'});
         break;
@@ -63,6 +66,7 @@ function connect() {
         emit('playerJoined', { id: msg.id, nickname: msg.nickname });
         break;
     case 'gameStarted':
+        localStorage.setItem("gameActive", "true");
         window.location.hash = '/game'; // Redirect to game page
         emit('gameStarted', { map: msg.map, players: msg.players, chatHistory: msg.chatHistory });
         break;
@@ -85,12 +89,18 @@ function connect() {
         emit('gameUpdate', { gameState: msg.gameState, players: msg.players, chatHistory: msg.chatHistory });
         break;
     case 'gameEnded':
+        localStorage.removeItem("gameActive"); // Clear game active flag
         emit('gameEnded', { winner: msg.winner });
         break;
     case 'powerUpPickup':
         emit('powerUpPickup', { 
           powerUpId: msg.powerUpId,
         });
+        break;
+    // Add a case for forced redirection
+    case 'forceGameRedirect':
+        localStorage.setItem("gameActive", "true");
+        window.location.hash = '/game';
         break;
     }
         

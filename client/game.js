@@ -17,6 +17,15 @@ export function Game() {
     return;
   }
 
+  // Prevent direct navigation to game
+  const gameActive = localStorage.getItem("gameActive") === "true";
+  if (!gameActive) {
+    console.log("Unauthorized game access, reloading page");
+    window.location.hash = "/";
+    window.location.reload();
+    return;
+  }
+
   document.getElementById("background-video").style.display = "none";
   const bgMusic = document.getElementById("background-music");
   if (bgMusic) {
