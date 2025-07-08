@@ -22,31 +22,6 @@ export const gameState = {
   lastUpdate: Date.now(),
 };
 
-// Function to send game updates to all clients or a specific client
-// export function sendGameUpdate(ws = null) {
-//   const message = {
-//     type: 'gameUpdate',
-//     gameState,
-//     players: Array.from(players.values()).map(c => ({
-//       id: c.id,
-//       nickname: c.nickname,
-//       lives: c.lives,
-//       alive: c.alive,
-//       position: c.position,
-//       speed: c.speed,
-//       bombRange: c.bombRange,
-//       bombCount: c.bombCount
-//     })),
-//     chatHistory,
-//   };
-
-//   if (ws) {
-//     sendMsg(ws, message);
-//   } else {
-//     broadcast(message);
-//   }
-// }
-
 // New functions for game management
 export function startCountdown() {
   if (readyTimer) return;
