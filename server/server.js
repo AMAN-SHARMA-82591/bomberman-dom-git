@@ -1,9 +1,11 @@
 import { WebSocketServer } from 'ws'; // Import server from 'ws' package
-import { deActivePlayer, handlePlayerMove, handlePlaceBomb, startGame, players, count, updateCount, gameState, checkGameEnd } from './game/state.js';
-import { clients, broadcast, sendMsg, updateConnection } from './handlers/connection.js'; // Import the clients map to manage connections
-import { handleJoin, readyTimer } from './handlers/main.js';
-import { sendLobbyUpdate } from './handlers/lobby.js'; // Import the lobby update function
-import { handleNewChat } from './handlers/chat.js'; // Import chat handling function
+import { startGame, gameState, checkGameEnd } from './game/state.js';
+import { clients, broadcast, sendMsg, updateConnection } from './handlers/connection.js';
+import { handleJoin, readyTimer, sendLobbyUpdate } from './handlers/pregame.js';
+import { players, deactivatePlayer, handlePlayerMove } from './handlers/players.js';
+import { count, updateCount } from './game/utils.js';
+import { handlePlaceBomb } from './handlers/bombs.js';
+import { handleNewChat } from './handlers/chat.js';
 
 const server = new WebSocketServer({ port: 8080 });
 
@@ -97,7 +99,7 @@ server.on('connection', ws => {
         break;
 
       case 'leaveGame':
-        deActivePlayer(id); // Deactivate player
+        deactivatePlayer(id); // Deactivate player
         clients.delete(id); // Remove client from the map
         checkGameEnd(); // Check if game has ended
         break;
@@ -129,7 +131,7 @@ function clearConnection(ws) {
     if (client.ws === ws) {
       clients.delete(id);
         if (gameState.status === 'running' || gameState.status === 'ended') {
-          deActivePlayer(id); // Deactivate player if game is running
+          deactivatePlayer(id); // Deactivate player if game is running
         } else {
           broadcast({ type: 'lobbyUpdate', count: clients.size, players: Array.from(clients.values()).map(c => c.nickname) });
         }

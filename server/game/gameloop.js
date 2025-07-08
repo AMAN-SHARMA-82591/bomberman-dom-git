@@ -1,4 +1,4 @@
-import { gameState, checkGameEnd } from './game/state.js';
+import { gameState, checkGameEnd } from './state.js';
 
 const DEFAULT_TICKRATE = 60; // Default tick rate in frames per second (fps)
 let intervalId = null;
