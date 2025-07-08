@@ -6,7 +6,7 @@ export function sendLobbyUpdate(ws = null) {
     type: 'lobbyUpdate', 
     count: clients.size, 
     players: Array.from(clients.values()).map(c => c.nickname), 
-    gameFull: clients.size >= 4, 
+    gameFull: clients.size > 4, 
     chatHistory
   };
 

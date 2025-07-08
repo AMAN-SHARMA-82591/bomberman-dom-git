@@ -400,6 +400,11 @@ function addPowerUp(powerUp) {
     );
     if (!cell) return;
 
+    // Prevent adding a duplicate power-up element
+    if (cell.querySelector(`.power-up[data-powerup-id="${powerUp.id}"]`)) {
+      return;
+    }
+
     const powerUpEl = document.createElement("div");
     powerUpEl.className = "power-up";
     powerUpEl.dataset.powerupId = powerUp.id;
