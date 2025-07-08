@@ -1,4 +1,5 @@
 import {emit}  from '../framework/index.js';
+import { gameStarted } from './logic.js';
 
 let socket;
 export let error = null;
@@ -38,8 +39,13 @@ function connect() {
         break;
     case 'playerExists':
         // If player already exists, redirect to lobby
-        window.location.hash = '/lobby'; // Redirect to lobby page
-        emit('playerJoined', { id: msg.id, nickname: msg.nickname });
+        if (gameStarted) {
+            window.location.hash = '/game'; // Redirect to game page
+            sendMessage({ type: 'gameStart' });
+        } else {
+            window.location.hash = '/lobby'; // Redirect to lobby page
+            emit('playerJoined', { id: msg.id, nickname: msg.nickname });
+        }
         break;
     case 'chat':
         console.log("chat message received:", msg);

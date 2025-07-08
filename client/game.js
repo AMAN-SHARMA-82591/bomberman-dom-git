@@ -4,7 +4,7 @@ import { stopGame, gameStarted, handleChatOutsideClick } from "./logic.js";
 import { emit } from "../framework/index.js";
 
 export function Game() {
-  if (gameStarted) return; // Prevent multiple game instances
+  // if (gameStarted) return; // Prevent multiple game instances
 
   console.log("Game component loaded");
 

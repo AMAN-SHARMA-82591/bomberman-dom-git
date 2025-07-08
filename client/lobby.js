@@ -1,9 +1,14 @@
 import { Chat } from "./chat.js";
+import { gameStarted } from "./logic.js";
 
 export function Lobby() {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
     window.location.hash = "/";
+    return;
+  }
+  if (gameStarted) {
+    window.location.hash = "/game";
     return;
   }
   const nickname = user.nickname;

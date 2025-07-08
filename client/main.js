@@ -12,7 +12,7 @@ export function Main() {
 
   const user = JSON.parse(localStorage.getItem('user'));
   if (user) {
-    sendMessage({ type: 'lobby', id: user.id });
+    sendMessage({ type: 'join', id: user.id });
     return;
   }
 

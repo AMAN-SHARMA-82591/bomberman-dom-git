@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws'; // Import server from 'ws' package
-import { startGame, gameState, checkGameEnd } from './game/state.js';
+import { startGame, gameState, checkGameEnd, endGame } from './game/state.js';
 import { clients, broadcast, sendMsg, updateConnection } from './handlers/connection.js';
 import { handleJoin, readyTimer, sendLobbyUpdate } from './handlers/pregame.js';
 import { players, deactivatePlayer, handlePlayerMove } from './handlers/players.js';
@@ -42,10 +42,6 @@ server.on('connection', ws => {
     switch (data.type) {
       case 'join': // Join a game with a nickname
         // check if game has started
-        if (gameState.status === 'running') {
-          sendMsg(ws, { type: 'error', message: 'Game has already started' });
-          return;
-        }
         handleJoin(id, ws, data);
         readyTimer(); // Start the ready timer if needed
         break;
@@ -87,6 +83,7 @@ server.on('connection', ws => {
       case 'pageReload': // update connection when pages are reloaded
         if (clients.has(id)) {
           updateConnection(id, ws)
+          console.log('PageReload for status:', gameState.status);
           if (gameState.status !== 'running' && gameState.status !== 'ended') {
             sendLobbyUpdate(ws); // Send updated player count and list
           } else {

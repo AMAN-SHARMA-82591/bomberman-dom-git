@@ -1,5 +1,5 @@
 import { clients, broadcast, sendMsg } from "./connection.js";
-import { startCountdown } from "../game/state.js";
+import { startCountdown, gameState } from "../game/state.js";
 import { addPlayer } from "./players.js";
 import { chatHistory } from "./chat.js"; // Import chat history for lobby updates
 
@@ -12,9 +12,12 @@ let firstJoinTime = null;
 export function handleJoin(id, ws, data) {
 
   if (clients.has(id)) { // Prevent re-joining
-      sendMsg(ws, { type: 'playerExists', id: id, nickname: clients.get(id).nickname });
-      return;
-    }; 
+    sendMsg(ws, { type: 'playerExists', id: id, nickname: clients.get(id).nickname });
+    return;
+  } else if (gameState.status === 'running') {
+    sendMsg(ws, { type: 'error', message: 'Game has already started' });
+    return;
+  } 
 
   if (clients.size >= 4) { // Limit to 4 players
     sendMsg(ws, { type: 'error', message: 'Game is full', gameFull: clients.size >= 4 });

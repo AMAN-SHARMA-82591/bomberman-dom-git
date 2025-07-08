@@ -70,14 +70,14 @@ export function startGame(ws = null) {
 export function endGame() {  // Clear game-related state
   console.log("Ending game and resetting state...");
   players.clear();
-  updateCount(true); // Reset game start count
-  gameState.status = "waiting"; // Reset game status
+  updateCount(true);
+  gameState.status = "waiting";
   gameState.players = {};
   gameState.bombs = [];
   gameState.explosions = [];
   gameState.map = { width: 0, height: 0, tiles: [], powerUps: [] };
   gameState.powerUpCounts = { bomb: 4, flame: 4, speed: 2 };
-  chatHistory.length = 0; // Clear chat history for the next game
+  chatHistory.length = 0;
   playerPositions.length = 0;
   readyTimer = null;
 
@@ -103,12 +103,5 @@ export function checkGameEnd() {
     });
 
     setTimeout(endGame, 5000); // Increased delay to 5 seconds
-  } else if (alivePlayers.length === 0) {
-    gameState.status = "ended";
-    broadcast({
-      type: "gameEnded",
-      winner: null, // No winner if all players are eliminated
-    });
-    endGame();
   }
 }
