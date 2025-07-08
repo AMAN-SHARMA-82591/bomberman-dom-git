@@ -57,7 +57,6 @@ function connect() {
         break;
     case 'lobbyUpdate':
         console.log("lobby update message received:", msg);
-        window.location.hash = '/lobby'; // Redirect to lobby page
         emit('updateLobby', {count: msg.count, players: msg.players, gameFull: msg.gameFull, chatHistory: msg.chatHistory});
         break;
     case 'playerJoined':
