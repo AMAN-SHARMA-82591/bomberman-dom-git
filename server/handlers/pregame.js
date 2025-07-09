@@ -1,5 +1,5 @@
 import { clients, broadcast, sendMsg } from "./connection.js";
-import { startCountdown, gameState } from "../game/state.js";
+import { startCountdown, gameState, startGame } from "../game/state.js";
 import { addPlayer } from "./players.js";
 import { chatHistory } from "./chat.js"; // Import chat history for lobby updates
 
@@ -13,6 +13,9 @@ export function handleJoin(id, ws, data) {
 
   if (clients.has(id)) { // Prevent re-joining
     sendMsg(ws, { type: 'playerExists', id: id, nickname: clients.get(id).nickname });
+    if (gameState.status === 'running' || gameState.status === 'ended') {
+      startGame(ws); // Redirect to game if it has started
+    }
     return;
   } else if (gameState.status !== 'waiting') { // Check if game has already started
     sendMsg(ws, { type: 'error', message: 'Game has already started' });
@@ -61,7 +64,7 @@ export function readyTimer() {
       firstJoinTime = Date.now();
       
       // Broadcast initial waiting message
-      broadcast({ type: 'waitingTimer', timeLeft: 2 });
+      broadcast({ type: 'waitingTimer', timeLeft: 20 });
       
       waitTimer = setInterval(() => {
         if (clients.size < 2) {
@@ -70,13 +73,13 @@ export function readyTimer() {
           firstJoinTime = null;
         } else if (clients.size === 4) {
           statusCountdown();
-        } else if (Date.now() - firstJoinTime > 2000) {
+        } else if (Date.now() - firstJoinTime > 20000) {
           if (clients.size >= 2) {
             statusCountdown();
           }
         } else {
           // Calculate and broadcast remaining time
-          const timeLeft = Math.ceil((2000 - (Date.now() - firstJoinTime)) / 1000);
+          const timeLeft = Math.ceil((20000 - (Date.now() - firstJoinTime)) / 1000);
           broadcast({ type: 'waitingTimer', timeLeft });
         }
       }, 1000); // Check every second

@@ -129,6 +129,13 @@ on("updateLobby", ({ count, players, gameFull, chatHistory }) => {
       });
     }
 
+    if (count < 2) {
+      const timerContainer = document.getElementById("timer");
+      if (timerContainer) {
+        timerContainer.textContent = "Waiting for more players...";
+      }
+    }
+
     // update chat history
     const chatContainer = document.getElementById("chat");
     if (chatContainer && chatContainer.innerHTML === "") {
@@ -149,7 +156,11 @@ on("updateLobby", ({ count, players, gameFull, chatHistory }) => {
 on("readyTimer", ({ countdown }) => {
   const timerContainer = document.getElementById("timer");
   if (timerContainer) {
-    timerContainer.textContent = `Game starting in: ${countdown} s`;
+    if (countdown === null) {
+      timerContainer.textContent = ""; // Clear the timer text
+    } else {
+      timerContainer.textContent = `Game starting in: ${countdown} s`;
+    }
   }
 });
 

@@ -38,6 +38,15 @@ function handleRouteChange() {
       render(renderFn(), rootEl);
     });
     unsubscribes.push(unsub);
+  } else {
+    // default to first route if no match found
+    const firstRoute = routes.keys().next().value;
+    if (firstRoute) {
+      window.location.hash = firstRoute; // Set the hash to the first route
+      unsubscribes.forEach(unsub => unsub()); // Unsubscribe from previous state changes
+      unsubscribes.length = 0; // Clear the array of unsubscribe functions
+      render(routes.get(firstRoute)(), rootEl);
+    }
   }
   
 }

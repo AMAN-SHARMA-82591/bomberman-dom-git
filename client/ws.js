@@ -67,7 +67,6 @@ function connect() {
         break;
     case 'gameStarted':
         localStorage.setItem("gameActive", "true");
-        window.location.hash = '/game'; // Redirect to game page
         emit('gameStarted', { map: msg.map, players: msg.players, chatHistory: msg.chatHistory });
         break;
     case 'playerMoved':

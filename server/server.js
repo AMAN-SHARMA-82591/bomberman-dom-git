@@ -56,7 +56,10 @@ server.on("connection", (ws) => {
       case "join": // Join a game with a nickname
         // check if game has started
         handleJoin(id, ws, data);
-        readyTimer(); // Start the ready timer if needed
+        if (gameState.status === "waiting") {
+          // If game is waiting, start the ready timer
+          readyTimer();
+        } 
         break;
 
       case "lobby":

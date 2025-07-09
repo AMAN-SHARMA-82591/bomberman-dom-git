@@ -36,19 +36,26 @@ export function startCountdown() {
   broadcast({ type: "readyTimer", countdown });
 
   readyTimer = setInterval(() => {
+    // If players leave during countdown, cancel it
+    if (clients.size < 2) {
+      clearInterval(readyTimer);
+      readyTimer = null;
+      gameState.status = "waiting";
+      players.clear(); // Clear players added for the game
+      broadcast({ type: "readyTimer", countdown: null }); // Tell clients to clear timer
+      return;
+    }
+
     countdown--;
     broadcast({ type: "readyTimer", countdown });
 
     if (countdown <= 0) {
-      if (players.size < 2) {
-        // reset countdown
-      }
       clearInterval(readyTimer);
       broadcast({ type: "gameState" });
       updateCount(true); // Reset count when game starts
       readyTimer = null;
     }
-  }, 10);
+  }, 1000);
 }
 
 export function startGame(ws = null) {
