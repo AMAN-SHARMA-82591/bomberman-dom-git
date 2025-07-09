@@ -13,6 +13,13 @@ export let gameEnded = false;
 export let gameStarted = false;
 
 function handleKeyDown(e) {
+    // Prevent default browser actions for arrow keys
+  if (
+    ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)
+  ) {
+    e.preventDefault();
+  }
+
   // If the user is typing in the chat input, do not handle game controls.
   if (document.activeElement.id === "chat-input" || gameEnded) {
     return;
@@ -27,12 +34,7 @@ function handleKeyDown(e) {
   }
 
   console.log("Key pressed:", e.key);
-  // Prevent default browser actions for arrow keys
-  if (
-    ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)
-  ) {
-    e.preventDefault();
-  }
+
   if (e.key === " ") {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
