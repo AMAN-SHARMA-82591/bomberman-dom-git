@@ -14,7 +14,7 @@ export function handleJoin(id, ws, data) {
   if (clients.has(id)) { // Prevent re-joining
     sendMsg(ws, { type: 'playerExists', id: id, nickname: clients.get(id).nickname });
     return;
-  } else if (gameState.status === 'running') {
+  } else if (gameState.status !== 'waiting') { // Check if game has already started
     sendMsg(ws, { type: 'error', message: 'Game has already started' });
     return;
   } 

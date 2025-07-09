@@ -75,7 +75,7 @@ server.on("connection", (ws) => {
         ) {
           startGame(ws); // Send game state to the client
         } else {
-          sendLobbyUpdate(ws);
+          sendLobbyUpdate();
         }
 
         break;
