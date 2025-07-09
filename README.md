@@ -1,25 +1,76 @@
-# bomberman-dom-git
+# Twilight Inferno
+
+Twilight Inferno is a real-time multiplayer Bomberman-style game. Players navigate a grid-based arena, place bombs to destroy walls and opponents, and collect power-ups to gain advantages. The last player standing wins!
+
+## Features
+
+- Real-time multiplayer (2-4 players)
+- Place bombs, destroy walls, and eliminate opponents
+- Collect power-ups: bomb count, flame range, speed
+- In-game chat
+- Atmospheric visuals and music
 
 ## Getting Started
-1. Start the WebSocket Server
-In the server/ directory:
 
-bash ´´
-cd server
-node index.js
-´´
+### Prerequisites
 
-Make sure you have installed the ws package:
-npm install (if package.json exists) or npm install ws
+- Node.js (v14 or higher)
+- npm
+- Modern web browser (Chrome, Firefox, Safari, Edge)
 
-2. Open the Frontend with Live Server
-From the project root (or wherever your index.html is):
+### Installation
 
-Right-click index.html in VS Code
+1. Clone the repository:
 
-Select "Open with Live Server"
+   ```bash
+   git clone https://github.com/yourusername/twilight-inferno.git
+   cd twilight-inferno
+   ```
 
-### Notes
-index.html connects to the WebSocket server at ws://localhost:3000
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Make sure the server is running before opening the HTML in browser
+### Running the Game
+
+1. Start the WebSocket server:
+
+   ```bash
+   node server/server.js
+   ```
+
+2. Open the game in your browser:
+   - If you have VS Code with Live Server extension, right-click on `index.html` and select "Open with Live Server"
+   - Or use any other static file server of your choice
+
+## How to Play
+
+- **Movement**: Use arrow keys or WASD to move your character
+- **Place Bombs**: Press SPACE to place a bomb
+- **Collect Power-ups**:
+  - 💣 Bomb: Increases the number of bombs you can place
+  - 🔥 Flame: Increases explosion range
+  - ⚡ Speed: Makes your character move faster
+- **Objective**: Be the last player standing by eliminating your opponents
+
+## Game Flow
+
+1. Enter your nickname on the start screen
+2. Wait in the lobby for other players to join (2-4 players)
+3. When enough players join, a countdown begins
+4. The match starts—destroy walls, collect power-ups, and hunt opponents
+5. The last player standing wins, or it's a draw if all players are eliminated
+
+## Technical Details
+
+- **Frontend**: Vanilla JavaScript
+- **Backend**: Node.js WebSocket server
+- **Communication**: Real-time WebSocket protocol
+- **State Management**: Server-authoritative game state
+
+## Credits
+
+- Game concept inspired by the classic Bomberman series
+- Custom artwork and visual design
+- Background music and sound effects
